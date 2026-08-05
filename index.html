@@ -17,6 +17,7 @@
     --dep-c:#378ADD; --dep-bg:#E6F1FB; --dep-tx:#0C447C;
     --pend-c:#BA7517; --pend-bg:#FAEEDA; --pend-tx:#633806;
     --ok-c:#1D9E75; --ok-bg:#E1F5EE; --ok-tx:#085041;
+    --sel-solid:#1C8FC9; --pre-solid:#D85A30; --dep-solid:#1D9E75;
   }
   @media (prefers-color-scheme: dark){
     :root{
@@ -59,30 +60,6 @@
   .btn{font-size:12px; padding:6px 10px; border-radius:6px; border:1px solid var(--border); background:var(--card); color:var(--text); cursor:pointer;}
   .btn:hover{border-color:var(--muted);}
 
-  /* Detail panel */
-  .panel{
-    display:none; background:var(--card); border:1px solid var(--border); border-radius:10px;
-    padding:14px 16px; margin-bottom:16px;
-  }
-  .panel.show{display:block;}
-  .panel-title{font-size:15px; font-weight:500; margin-bottom:2px;}
-  .panel-sub{font-size:11.5px; color:var(--muted); margin-bottom:12px;}
-  .panel-cols{display:flex; gap:24px; flex-wrap:wrap;}
-  .panel-col{flex:1; min-width:220px;}
-  .panel-col-title{font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-bottom:8px; display:flex; align-items:center; gap:6px;}
-  .panel-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:5px;}
-  .panel-item{
-    display:flex; align-items:center; justify-content:space-between; gap:8px;
-    font-size:12.5px; padding:6px 9px; border-radius:6px; background:var(--bg); border:1px solid var(--border); cursor:pointer;
-  }
-  .panel-item:hover{border-color:var(--muted);}
-  .panel-empty{font-size:12px; color:var(--muted); font-style:italic;}
-  .pill{font-size:10px; padding:1px 7px; border-radius:8px; font-weight:500; white-space:nowrap;}
-  .pill.none{background:var(--ele-bg); color:var(--muted);}
-  .pill.pending{background:var(--pend-bg); color:var(--pend-tx);}
-  .pill.approved{background:var(--ok-bg); color:var(--ok-tx);}
-  .panel-close{float:right; background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; line-height:1;}
-
   .board{display:flex; gap:14px; overflow-x:auto; padding-bottom:12px;}
   .col{min-width:200px; flex:0 0 200px;}
   .col-head{font-size:12px; font-weight:500; text-align:center; padding:6px 4px; margin-bottom:8px; color:var(--muted); border-bottom:1px solid var(--border);}
@@ -115,10 +92,18 @@
   .card.locked:not(.approved){filter:grayscale(.55); opacity:.55;}
   .card.unlocked:not(.approved){border-color:var(--ok-c); box-shadow:0 0 0 1px var(--ok-c) inset;}
 
-  .card.dim{opacity:.2;}
-  .card.self{border-color:var(--text); box-shadow:0 0 0 2px var(--text) inset;}
-  .card.pre-hl{border-color:var(--pre-c); box-shadow:0 0 0 2px var(--pre-c) inset; background:var(--pre-bg);}
-  .card.dep-hl{border-color:var(--dep-c); box-shadow:0 0 0 2px var(--dep-c) inset; background:var(--dep-bg);}
+  .card.dim{opacity:.18;}
+
+  .card.self, .card.pre-hl, .card.dep-hl{opacity:1 !important; filter:none !important; box-shadow:none !important;}
+  .card.self{background:var(--sel-solid) !important; border-color:var(--sel-solid) !important;}
+  .card.pre-hl{background:var(--pre-solid) !important; border-color:var(--pre-solid) !important;}
+  .card.dep-hl{background:var(--dep-solid) !important; border-color:var(--dep-solid) !important;}
+  .card.self .name, .card.pre-hl .name, .card.dep-hl .name{text-decoration:none !important;}
+  .card.self .name, .card.pre-hl .name, .card.dep-hl .name{color:#fff;}
+  .card.self .prereq-count, .card.pre-hl .prereq-count, .card.dep-hl .prereq-count{color:rgba(255,255,255,.8);}
+  .card.self .status-btn, .card.pre-hl .status-btn, .card.dep-hl .status-btn{border-color:rgba(255,255,255,.8);}
+  .card.self .status-btn:not(.pending):not(.approved), .card.pre-hl .status-btn:not(.pending):not(.approved), .card.dep-hl .status-btn:not(.pending):not(.approved){background:rgba(255,255,255,.15);}
+  .card.self .tag, .card.pre-hl .tag, .card.dep-hl .tag{background:rgba(255,255,255,.28); color:#fff;}
 
   .hint{font-size:11.5px; color:var(--muted); margin-top:14px;}
 </style>
@@ -158,24 +143,8 @@
   <button class="btn" id="resetBtn">Borrar todo</button>
 </div>
 
-<div class="panel" id="panel">
-  <button class="panel-close" id="panelClose">&times;</button>
-  <div class="panel-title" id="panelTitle"></div>
-  <div class="panel-sub" id="panelSub"></div>
-  <div class="panel-cols">
-    <div class="panel-col">
-      <div class="panel-col-title"><i class="swatch" style="background:var(--pre-bg); border-color:var(--pre-c)"></i>Necesita tener aprobadas</div>
-      <ul class="panel-list" id="panelPre"></ul>
-    </div>
-    <div class="panel-col">
-      <div class="panel-col-title"><i class="swatch" style="background:var(--dep-bg); border-color:var(--dep-c)"></i>Habilita a cursar</div>
-      <ul class="panel-list" id="panelDep"></ul>
-    </div>
-  </div>
-</div>
-
 <div class="board" id="board"></div>
-<p class="hint">Tocá el círculo para cambiar el estado de una materia: sin cursar → final pendiente → aprobada. Tocá el nombre para ver el detalle de correlativas y materias que habilita.</p>
+<p class="hint">Tocá el círculo para cambiar el estado de una materia: sin cursar → final pendiente → aprobada. Tocá el nombre de una materia para ver, resaltadas en el mapa, sus correlativas (naranja) y lo que habilita (verde).</p>
 
 <script>
 const AREA = {
@@ -375,8 +344,6 @@ function renderAll(){
   document.getElementById('progressFillPend').style.width = (pendingCount/total*100).toFixed(1)+'%';
   document.getElementById('progressLabel').textContent =
     `${approvedCount} / ${total} aprobadas` + (pendingCount ? ` · ${pendingCount} con final pendiente` : '');
-
-  if(selected) renderPanel(selected);
 }
 renderAll();
 
@@ -393,7 +360,7 @@ function clearHighlight(){
   document.querySelectorAll('.card').forEach(c => c.classList.remove('dim','self','pre-hl','dep-hl'));
 }
 function selectSubject(id){
-  if(selected === id){ closePanel(); return; }
+  if(selected === id){ selected = null; clearHighlight(); return; }
   selected = id;
   clearHighlight();
   const subj = SUBJECTS.find(s => s.id === id);
@@ -406,57 +373,11 @@ function selectSubject(id){
     else if(dep.includes(cid)) card.classList.add('dep-hl');
     else card.classList.add('dim');
   });
-  renderPanel(id);
   document.getElementById('card-'+id).scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
 }
 
-function renderPanel(id){
-  const subj = SUBJECTS.find(s => s.id === id);
-  const pre = subj.p;
-  const dep = DEPENDENTS[id] || [];
-  document.getElementById('panel').classList.add('show');
-  document.getElementById('panelTitle').textContent = subj.n;
-  document.getElementById('panelSub').textContent = 'Estado actual: ' + statusLabel(getStatus(id));
-
-  const preList = document.getElementById('panelPre');
-  preList.innerHTML = '';
-  if(!pre.length){
-    preList.innerHTML = '<li class="panel-empty">No tiene correlativas</li>';
-  } else {
-    pre.forEach(pid => {
-      const li = document.createElement('li');
-      li.className = 'panel-item';
-      const st = getStatus(pid);
-      li.innerHTML = `<span>${NAMES[pid]}</span><span class="pill ${st}">${statusLabel(st)}</span>`;
-      li.addEventListener('click', () => selectSubject(pid));
-      preList.appendChild(li);
-    });
-  }
-
-  const depList = document.getElementById('panelDep');
-  depList.innerHTML = '';
-  if(!dep.length){
-    depList.innerHTML = '<li class="panel-empty">No habilita otras materias</li>';
-  } else {
-    dep.forEach(did => {
-      const li = document.createElement('li');
-      li.className = 'panel-item';
-      const st = getStatus(did);
-      li.innerHTML = `<span>${NAMES[did]}</span><span class="pill ${st}">${statusLabel(st)}</span>`;
-      li.addEventListener('click', () => selectSubject(did));
-      depList.appendChild(li);
-    });
-  }
-}
-
-function closePanel(){
-  selected = null;
-  clearHighlight();
-  document.getElementById('panel').classList.remove('show');
-}
-document.getElementById('panelClose').addEventListener('click', closePanel);
 document.body.addEventListener('click', e => {
-  if(!e.target.closest('.card') && !e.target.closest('.panel')) closePanel();
+  if(!e.target.closest('.card')){ selected = null; clearHighlight(); }
 });
 </script>
 </body>
