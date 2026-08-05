@@ -13,6 +13,10 @@
     --tec:#D85A30; --tec-bg:#FAECE7; --tec-tx:#712B13;
     --ges:#D4537E; --ges-bg:#FBEAF0; --ges-tx:#72243E;
     --ele:#888780; --ele-bg:#F1EFE8; --ele-tx:#444441;
+    --pre-c:#D85A30; --pre-bg:#FAECE7; --pre-tx:#712B13;
+    --dep-c:#378ADD; --dep-bg:#E6F1FB; --dep-tx:#0C447C;
+    --pend-c:#BA7517; --pend-bg:#FAEEDA; --pend-tx:#633806;
+    --ok-c:#1D9E75; --ok-bg:#E1F5EE; --ok-tx:#085041;
   }
   @media (prefers-color-scheme: dark){
     :root{
@@ -24,6 +28,10 @@
       --tec-bg:#3d1e10; --tec-tx:#F0997B;
       --ges-bg:#3d1526; --ges-tx:#ED93B1;
       --ele-bg:#302f2b; --ele-tx:#D3D1C7;
+      --pre-bg:#3d1e10; --pre-tx:#F0997B;
+      --dep-bg:#0c2c47; --dep-tx:#B5D4F4;
+      --pend-bg:#3d2c08; --pend-tx:#FAC775;
+      --ok-bg:#063d31; --ok-tx:#9FE1CB;
     }
   }
   *{box-sizing:border-box;}
@@ -34,81 +42,150 @@
   }
   h1{font-size:19px; font-weight:500; margin:0 0 4px;}
   .subtitle{color:var(--muted); font-size:13px; margin:0 0 16px;}
-  .legend{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:18px;}
+
+  .legend-block{margin-bottom:14px;}
+  .legend-title{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:6px;}
+  .legend{display:flex; flex-wrap:wrap; gap:10px 16px; margin-bottom:6px;}
   .legend span{display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted);}
-  .dot{width:10px; height:10px; border-radius:3px; display:inline-block;}
-  .board{display:flex; gap:14px; overflow-x:auto; padding-bottom:12px;}
-  .col{min-width:190px; flex:0 0 190px;}
-  .col-head{font-size:12px; font-weight:500; text-align:center; padding:6px 4px; margin-bottom:8px; color:var(--muted); border-bottom:1px solid var(--border);}
-  .card{
-    background:var(--card); border:1px solid var(--border); border-left:4px solid var(--c);
-    border-radius:8px; padding:8px 10px 8px 8px; margin-bottom:8px; cursor:pointer;
-    transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease, filter .15s ease;
-    font-size:12.5px; line-height:1.35;
-    display:flex; gap:7px; align-items:flex-start;
-  }
-  .card:hover{transform:translateY(-1px); box-shadow:0 2px 6px rgba(0,0,0,.08);}
-  .card .chk{margin-top:2px; width:14px; height:14px; flex:0 0 14px; cursor:pointer; accent-color:var(--c);}
-  .card .body{flex:1; min-width:0;}
-  .card .name{font-weight:500; color:var(--text); margin-bottom:3px;}
-  .card .prereq{color:var(--muted); font-size:11px;}
-  .card .prereq b{color:var(--text); font-weight:400;}
-  .card.dim{opacity:.25;}
-  .card.self{outline:2px solid var(--c); background:var(--cbg);}
-  .card.pre{outline:2px solid #BA7517; background:var(--fis-bg);}
-  .card.dep{outline:2px solid #378ADD; background:var(--mat-bg);}
-  .card.approved{opacity:.55;}
-  .card.approved .name{text-decoration:line-through; text-decoration-thickness:1.5px;}
-  .card.locked{filter:grayscale(.7); opacity:.55;}
-  .card.locked .name{color:var(--muted);}
-  .card.unlocked:not(.approved){box-shadow:0 0 0 1.5px var(--c) inset;}
-  .badge{font-size:10px; padding:1px 6px; border-radius:8px; margin-left:6px; font-weight:500; white-space:nowrap;}
-  .badge.unlocked{background:var(--qui-bg); color:var(--qui-tx);}
-  .badge.locked{background:var(--ele-bg); color:var(--muted);}
-  .hint{font-size:11.5px; color:var(--muted); margin-top:14px;}
-  .toolbar{display:flex; align-items:center; gap:14px; margin-bottom:14px; flex-wrap:wrap;}
+  .dot{width:10px; height:10px; border-radius:3px; display:inline-block; flex:0 0 auto;}
+  .swatch{width:14px; height:14px; border-radius:4px; display:inline-block; flex:0 0 auto; border:1.5px solid var(--border);}
+
+  .toolbar{display:flex; align-items:center; gap:14px; margin-bottom:16px; flex-wrap:wrap;}
   .progress-wrap{flex:1; min-width:180px; max-width:320px;}
-  .progress-bar{height:8px; background:var(--border); border-radius:4px; overflow:hidden;}
-  .progress-fill{height:100%; background:var(--qui); width:0%; transition:width .2s ease;}
+  .progress-bar{height:8px; background:var(--border); border-radius:4px; overflow:hidden; display:flex;}
+  .progress-fill{height:100%; background:var(--ok-c); transition:width .2s ease;}
+  .progress-fill.pend{background:var(--pend-c);}
   .progress-label{font-size:11.5px; color:var(--muted); margin-top:3px;}
   .btn{font-size:12px; padding:6px 10px; border-radius:6px; border:1px solid var(--border); background:var(--card); color:var(--text); cursor:pointer;}
   .btn:hover{border-color:var(--muted);}
+
+  /* Detail panel */
+  .panel{
+    display:none; background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:14px 16px; margin-bottom:16px;
+  }
+  .panel.show{display:block;}
+  .panel-title{font-size:15px; font-weight:500; margin-bottom:2px;}
+  .panel-sub{font-size:11.5px; color:var(--muted); margin-bottom:12px;}
+  .panel-cols{display:flex; gap:24px; flex-wrap:wrap;}
+  .panel-col{flex:1; min-width:220px;}
+  .panel-col-title{font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+  .panel-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:5px;}
+  .panel-item{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    font-size:12.5px; padding:6px 9px; border-radius:6px; background:var(--bg); border:1px solid var(--border); cursor:pointer;
+  }
+  .panel-item:hover{border-color:var(--muted);}
+  .panel-empty{font-size:12px; color:var(--muted); font-style:italic;}
+  .pill{font-size:10px; padding:1px 7px; border-radius:8px; font-weight:500; white-space:nowrap;}
+  .pill.none{background:var(--ele-bg); color:var(--muted);}
+  .pill.pending{background:var(--pend-bg); color:var(--pend-tx);}
+  .pill.approved{background:var(--ok-bg); color:var(--ok-tx);}
+  .panel-close{float:right; background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; line-height:1;}
+
+  .board{display:flex; gap:14px; overflow-x:auto; padding-bottom:12px;}
+  .col{min-width:200px; flex:0 0 200px;}
+  .col-head{font-size:12px; font-weight:500; text-align:center; padding:6px 4px; margin-bottom:8px; color:var(--muted); border-bottom:1px solid var(--border);}
+  .card{
+    background:var(--card); border:1.5px solid var(--border); border-left:5px solid var(--c);
+    border-radius:8px; padding:8px 9px; margin-bottom:8px; cursor:pointer;
+    transition: transform .12s ease, box-shadow .12s ease, opacity .15s ease, filter .15s ease, border-color .15s ease;
+    font-size:12.5px; line-height:1.35;
+  }
+  .card:hover{transform:translateY(-1px); box-shadow:0 2px 6px rgba(0,0,0,.1);}
+  .card-top{display:flex; align-items:flex-start; gap:7px;}
+  .status-btn{
+    margin-top:1px; width:18px; height:18px; flex:0 0 18px; border-radius:50%;
+    border:2px solid var(--border); background:var(--card); cursor:pointer; padding:0;
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px;
+  }
+  .status-btn.pending{background:var(--pend-c); border-color:var(--pend-c);}
+  .status-btn.approved{background:var(--ok-c); border-color:var(--ok-c);}
+  .name-wrap{flex:1; min-width:0;}
+  .name{font-weight:500; color:var(--text);}
+  .tag-row{display:flex; gap:5px; flex-wrap:wrap; margin-top:5px;}
+  .tag{font-size:10px; padding:1px 6px; border-radius:8px; font-weight:500; white-space:nowrap;}
+  .tag.unlocked{background:var(--ok-bg); color:var(--ok-tx);}
+  .tag.locked{background:var(--ele-bg); color:var(--muted);}
+  .tag.pend{background:var(--pend-bg); color:var(--pend-tx);}
+  .prereq-count{font-size:10.5px; color:var(--muted); margin-top:4px;}
+
+  .card.approved{opacity:.6;}
+  .card.approved .name{text-decoration:line-through; text-decoration-thickness:1.5px;}
+  .card.locked:not(.approved){filter:grayscale(.55); opacity:.55;}
+  .card.unlocked:not(.approved){border-color:var(--ok-c); box-shadow:0 0 0 1px var(--ok-c) inset;}
+
+  .card.dim{opacity:.2;}
+  .card.self{border-color:var(--text); box-shadow:0 0 0 2px var(--text) inset;}
+  .card.pre-hl{border-color:var(--pre-c); box-shadow:0 0 0 2px var(--pre-c) inset; background:var(--pre-bg);}
+  .card.dep-hl{border-color:var(--dep-c); box-shadow:0 0 0 2px var(--dep-c) inset; background:var(--dep-bg);}
+
+  .hint{font-size:11.5px; color:var(--muted); margin-top:14px;}
 </style>
 </head>
 <body>
 <h1>Ingeniería en Alimentos - UNSAM (Plan 2023)</h1>
-<p class="subtitle">Mapa de correlatividades por cuatrimestre. Tocá una materia para ver de qué depende (naranja) y qué habilita (azul).</p>
+<p class="subtitle">Mapa de correlatividades por cuatrimestre. Tocá una materia para ver en detalle de qué depende y qué habilita.</p>
 
-<div class="legend">
-  <span><i class="dot" style="background:var(--mat)"></i>Matemática</span>
-  <span><i class="dot" style="background:var(--qui)"></i>Química</span>
-  <span><i class="dot" style="background:var(--fis)"></i>Física</span>
-  <span><i class="dot" style="background:var(--bio)"></i>Biología</span>
-  <span><i class="dot" style="background:var(--tec)"></i>Tecnología / Industria</span>
-  <span><i class="dot" style="background:var(--ges)"></i>Gestión</span>
-  <span><i class="dot" style="background:var(--ele)"></i>Electivas</span>
+<div class="legend-block">
+  <div class="legend-title">Áreas</div>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--mat)"></i>Matemática</span>
+    <span><i class="dot" style="background:var(--qui)"></i>Química</span>
+    <span><i class="dot" style="background:var(--fis)"></i>Física</span>
+    <span><i class="dot" style="background:var(--bio)"></i>Biología</span>
+    <span><i class="dot" style="background:var(--tec)"></i>Tecnología / Industria</span>
+    <span><i class="dot" style="background:var(--ges)"></i>Gestión</span>
+    <span><i class="dot" style="background:var(--ele)"></i>Electivas</span>
+  </div>
+  <div class="legend-title">Estado</div>
+  <div class="legend">
+    <span><i class="swatch" style="background:var(--card); border-color:var(--border)"></i>Sin cursar / bloqueada</span>
+    <span><i class="swatch" style="background:var(--card); border:1.5px solid var(--ok-c)"></i>Habilitada para cursar</span>
+    <span><i class="swatch" style="background:var(--pend-c); border-color:var(--pend-c)"></i>Final pendiente</span>
+    <span><i class="swatch" style="background:var(--ok-c); border-color:var(--ok-c)"></i>Aprobada (con final)</span>
+  </div>
 </div>
 
 <div class="toolbar">
   <div class="progress-wrap">
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFillOk" style="width:0%"></div>
+      <div class="progress-fill pend" id="progressFillPend" style="width:0%"></div>
+    </div>
     <div class="progress-label" id="progressLabel">0 / 0 materias aprobadas</div>
   </div>
-  <button class="btn" id="resetBtn">Borrar aprobadas</button>
+  <button class="btn" id="resetBtn">Borrar todo</button>
+</div>
+
+<div class="panel" id="panel">
+  <button class="panel-close" id="panelClose">&times;</button>
+  <div class="panel-title" id="panelTitle"></div>
+  <div class="panel-sub" id="panelSub"></div>
+  <div class="panel-cols">
+    <div class="panel-col">
+      <div class="panel-col-title"><i class="swatch" style="background:var(--pre-bg); border-color:var(--pre-c)"></i>Necesita tener aprobadas</div>
+      <ul class="panel-list" id="panelPre"></ul>
+    </div>
+    <div class="panel-col">
+      <div class="panel-col-title"><i class="swatch" style="background:var(--dep-bg); border-color:var(--dep-c)"></i>Habilita a cursar</div>
+      <ul class="panel-list" id="panelDep"></ul>
+    </div>
+  </div>
 </div>
 
 <div class="board" id="board"></div>
-<p class="hint">Marcá el check para dar por aprobada una materia. Las que se pintan con borde de color ya están habilitadas para cursar. Tocá el nombre de una materia para ver de qué depende y qué habilita.</p>
+<p class="hint">Tocá el círculo para cambiar el estado de una materia: sin cursar → final pendiente → aprobada. Tocá el nombre para ver el detalle de correlativas y materias que habilita.</p>
 
 <script>
 const AREA = {
-  mat:{name:'Matemática', c:'var(--mat)', bg:'var(--mat-bg)', tx:'var(--mat-tx)'},
-  qui:{name:'Química', c:'var(--qui)', bg:'var(--qui-bg)', tx:'var(--qui-tx)'},
-  fis:{name:'Física', c:'var(--fis)', bg:'var(--fis-bg)', tx:'var(--fis-tx)'},
-  bio:{name:'Biología', c:'var(--bio)', bg:'var(--bio-bg)', tx:'var(--bio-tx)'},
-  tec:{name:'Tecnología', c:'var(--tec)', bg:'var(--tec-bg)', tx:'var(--tec-tx)'},
-  ges:{name:'Gestión', c:'var(--ges)', bg:'var(--ges-bg)', tx:'var(--ges-tx)'},
-  ele:{name:'Electiva', c:'var(--ele)', bg:'var(--ele-bg)', tx:'var(--ele-tx)'}
+  mat:{name:'Matemática', c:'var(--mat)'},
+  qui:{name:'Química', c:'var(--qui)'},
+  fis:{name:'Física', c:'var(--fis)'},
+  bio:{name:'Biología', c:'var(--bio)'},
+  tec:{name:'Tecnología', c:'var(--tec)'},
+  ges:{name:'Gestión', c:'var(--ges)'},
+  ele:{name:'Electiva', c:'var(--ele)'}
 };
 
 const DATA = [
@@ -186,33 +263,44 @@ const DATA = [
  ]}
 ];
 
+const SUBJECTS = DATA.flatMap(c => c.subjects);
 const NAMES = {};
-DATA.forEach(col => col.subjects.forEach(s => NAMES[s.id] = s.n));
+SUBJECTS.forEach(s => NAMES[s.id] = s.n);
 
 const DEPENDENTS = {};
-DATA.forEach(col => col.subjects.forEach(s => {
+SUBJECTS.forEach(s => {
   s.p.forEach(pid => {
     if(!DEPENDENTS[pid]) DEPENDENTS[pid] = [];
     DEPENDENTS[pid].push(s.id);
   });
-}));
+});
 
-const ALL_IDS = DATA.flatMap(c => c.subjects.map(s => s.id));
+const ALL_IDS = SUBJECTS.map(s => s.id);
+const STATES = ['none','pending','approved'];
 
-let approved = {};
-function loadApproved(){
+let status = {};
+function loadStatus(){
   try{
-    const raw = localStorage.getItem('unsam-alimentos-aprobadas');
-    approved = raw ? JSON.parse(raw) : {};
-  }catch(e){ approved = {}; }
+    const raw = localStorage.getItem('unsam-alimentos-estado');
+    status = raw ? JSON.parse(raw) : {};
+  }catch(e){ status = {}; }
 }
-function saveApproved(){
-  try{ localStorage.setItem('unsam-alimentos-aprobadas', JSON.stringify(approved)); }catch(e){}
+function saveStatus(){
+  try{ localStorage.setItem('unsam-alimentos-estado', JSON.stringify(status)); }catch(e){}
 }
-loadApproved();
+loadStatus();
+
+function getStatus(id){ return status[id] || 'none'; }
+function isApproved(id){ return getStatus(id) === 'approved'; }
 
 function isUnlocked(subj){
-  return subj.p.every(pid => approved[pid]);
+  return subj.p.every(pid => isApproved(pid));
+}
+
+function statusLabel(st){
+  if(st === 'approved') return 'Aprobada';
+  if(st === 'pending') return 'Final pendiente';
+  return 'Sin cursar';
 }
 
 const board = document.getElementById('board');
@@ -226,84 +314,149 @@ DATA.forEach(col => {
     card.className = 'card';
     card.id = 'card-' + s.id;
     card.style.setProperty('--c', area.c);
-    card.style.setProperty('--cbg', area.bg);
-    const prereqText = s.p.length
-      ? s.p.map(pid => NAMES[pid]).join(', ')
-      : 'Sin correlativas';
     card.innerHTML = `
-      <input type="checkbox" class="chk" id="chk-${s.id}">
-      <div class="body">
-        <div class="name">${s.n}<span class="badge" id="badge-${s.id}"></span></div>
-        <div class="prereq">${prereqText}</div>
+      <div class="card-top">
+        <button class="status-btn" id="status-${s.id}" title="Cambiar estado"></button>
+        <div class="name-wrap">
+          <div class="name">${s.n}</div>
+          <div class="prereq-count" id="prereqcount-${s.id}"></div>
+          <div class="tag-row" id="tagrow-${s.id}"></div>
+        </div>
       </div>`;
-    card.querySelector('.body').addEventListener('click', () => selectSubject(s.id));
-    const chk = card.querySelector('.chk');
-    chk.addEventListener('click', e => e.stopPropagation());
-    chk.addEventListener('change', () => toggleApproved(s.id, chk.checked));
+    card.querySelector('.name-wrap').addEventListener('click', () => selectSubject(s.id));
+    const btn = card.querySelector('.status-btn');
+    btn.addEventListener('click', e => { e.stopPropagation(); cycleStatus(s.id); });
     colDiv.appendChild(card);
   });
   board.appendChild(colDiv);
 });
 
-function toggleApproved(id, val){
-  if(val) approved[id] = true; else delete approved[id];
-  saveApproved();
-  renderStates();
+function cycleStatus(id){
+  const cur = getStatus(id);
+  const next = STATES[(STATES.indexOf(cur) + 1) % STATES.length];
+  if(next === 'none') delete status[id]; else status[id] = next;
+  saveStatus();
+  renderAll();
 }
 
-function renderStates(){
-  let approvedCount = 0;
-  ALL_IDS.forEach(id => {
-    const subj = DATA.flatMap(c => c.subjects).find(s => s.id === id);
+function renderAll(){
+  let approvedCount = 0, pendingCount = 0;
+  SUBJECTS.forEach(subj => {
+    const id = subj.id;
+    const st = getStatus(id);
     const card = document.getElementById('card-' + id);
-    const chk = document.getElementById('chk-' + id);
-    const badge = document.getElementById('badge-' + id);
-    const isApproved = !!approved[id];
+    const btn = document.getElementById('status-' + id);
+    const tagrow = document.getElementById('tagrow-' + id);
+    const prereqcount = document.getElementById('prereqcount-' + id);
     const unlocked = isUnlocked(subj);
-    chk.checked = isApproved;
-    if(isApproved) approvedCount++;
-    card.classList.toggle('approved', isApproved);
-    card.classList.toggle('locked', !isApproved && !unlocked);
-    card.classList.toggle('unlocked', !isApproved && unlocked);
-    if(isApproved){ badge.textContent=''; badge.className='badge'; }
-    else if(unlocked){ badge.textContent='habilitada'; badge.className='badge unlocked'; }
-    else { badge.textContent='bloqueada'; badge.className='badge locked'; }
+
+    if(st === 'approved') approvedCount++;
+    if(st === 'pending') pendingCount++;
+
+    card.classList.toggle('approved', st === 'approved');
+    card.classList.toggle('locked', st !== 'approved' && !unlocked);
+    card.classList.toggle('unlocked', st !== 'approved' && unlocked);
+
+    btn.className = 'status-btn ' + (st === 'none' ? '' : st);
+    btn.textContent = st === 'approved' ? '✓' : (st === 'pending' ? 'F' : '');
+
+    prereqcount.textContent = subj.p.length ? `${subj.p.length} correlativa${subj.p.length>1?'s':''}` : 'Sin correlativas';
+
+    tagrow.innerHTML = '';
+    if(st === 'pending'){
+      tagrow.innerHTML = '<span class="tag pend">final pendiente</span>';
+    } else if(st !== 'approved'){
+      tagrow.innerHTML = unlocked ? '<span class="tag unlocked">habilitada</span>' : '<span class="tag locked">bloqueada</span>';
+    }
   });
-  document.getElementById('progressFill').style.width = (approvedCount/ALL_IDS.length*100).toFixed(1)+'%';
-  document.getElementById('progressLabel').textContent = `${approvedCount} / ${ALL_IDS.length} materias aprobadas`;
+
+  const total = ALL_IDS.length;
+  document.getElementById('progressFillOk').style.width = (approvedCount/total*100).toFixed(1)+'%';
+  document.getElementById('progressFillPend').style.width = (pendingCount/total*100).toFixed(1)+'%';
+  document.getElementById('progressLabel').textContent =
+    `${approvedCount} / ${total} aprobadas` + (pendingCount ? ` · ${pendingCount} con final pendiente` : '');
+
+  if(selected) renderPanel(selected);
 }
-renderStates();
+renderAll();
 
 document.getElementById('resetBtn').addEventListener('click', () => {
-  if(confirm('¿Borrar todas las materias marcadas como aprobadas?')){
-    approved = {};
-    saveApproved();
-    renderStates();
+  if(confirm('¿Borrar el estado de todas las materias?')){
+    status = {};
+    saveStatus();
+    renderAll();
   }
 });
 
 let selected = null;
 function clearHighlight(){
-  document.querySelectorAll('.card').forEach(c => c.classList.remove('dim','self','pre','dep'));
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('dim','self','pre-hl','dep-hl'));
 }
 function selectSubject(id){
-  if(selected === id){ selected = null; clearHighlight(); return; }
+  if(selected === id){ closePanel(); return; }
   selected = id;
   clearHighlight();
-  const subj = DATA.flatMap(c => c.subjects).find(s => s.id === id);
+  const subj = SUBJECTS.find(s => s.id === id);
   const pre = subj.p;
   const dep = DEPENDENTS[id] || [];
   document.querySelectorAll('.card').forEach(card => {
     const cid = card.id.replace('card-','');
     if(cid === id) card.classList.add('self');
-    else if(pre.includes(cid)) card.classList.add('pre');
-    else if(dep.includes(cid)) card.classList.add('dep');
+    else if(pre.includes(cid)) card.classList.add('pre-hl');
+    else if(dep.includes(cid)) card.classList.add('dep-hl');
     else card.classList.add('dim');
   });
+  renderPanel(id);
   document.getElementById('card-'+id).scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
 }
+
+function renderPanel(id){
+  const subj = SUBJECTS.find(s => s.id === id);
+  const pre = subj.p;
+  const dep = DEPENDENTS[id] || [];
+  document.getElementById('panel').classList.add('show');
+  document.getElementById('panelTitle').textContent = subj.n;
+  document.getElementById('panelSub').textContent = 'Estado actual: ' + statusLabel(getStatus(id));
+
+  const preList = document.getElementById('panelPre');
+  preList.innerHTML = '';
+  if(!pre.length){
+    preList.innerHTML = '<li class="panel-empty">No tiene correlativas</li>';
+  } else {
+    pre.forEach(pid => {
+      const li = document.createElement('li');
+      li.className = 'panel-item';
+      const st = getStatus(pid);
+      li.innerHTML = `<span>${NAMES[pid]}</span><span class="pill ${st}">${statusLabel(st)}</span>`;
+      li.addEventListener('click', () => selectSubject(pid));
+      preList.appendChild(li);
+    });
+  }
+
+  const depList = document.getElementById('panelDep');
+  depList.innerHTML = '';
+  if(!dep.length){
+    depList.innerHTML = '<li class="panel-empty">No habilita otras materias</li>';
+  } else {
+    dep.forEach(did => {
+      const li = document.createElement('li');
+      li.className = 'panel-item';
+      const st = getStatus(did);
+      li.innerHTML = `<span>${NAMES[did]}</span><span class="pill ${st}">${statusLabel(st)}</span>`;
+      li.addEventListener('click', () => selectSubject(did));
+      depList.appendChild(li);
+    });
+  }
+}
+
+function closePanel(){
+  selected = null;
+  clearHighlight();
+  document.getElementById('panel').classList.remove('show');
+}
+document.getElementById('panelClose').addEventListener('click', closePanel);
 document.body.addEventListener('click', e => {
-  if(!e.target.closest('.card')){ selected = null; clearHighlight(); }
+  if(!e.target.closest('.card') && !e.target.closest('.panel')) closePanel();
 });
 </script>
 </body>
